@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IT Support — Submit a Ticket</title>
+<style>
+  /* =====================================================================
+     PALETTE — calm help-desk
+       ink #14202b  slate #3d5163  mist #e7edf2  paper #f6f8fa
+       signal #1f8a8a  signalink #125f5f  danger #b4322a
+     TYPE — system sans for body, monospace for ticket data
+     SIGNATURE — success state renders a perforated "ticket stub"
+     ===================================================================== */
+  :root{
+    --ink:#14202b; --slate:#3d5163; --mist:#e7edf2; --paper:#f6f8fa;
+    --signal:#1f8a8a; --signalink:#125f5f; --danger:#b4322a; --white:#fff;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
+    display:flex; justify-content:center; padding:32px 18px 64px;
+  }
+  .card{
+    width:100%; max-width:560px; background:var(--white);
+    border:1px solid var(--mist); border-radius:14px;
+    box-shadow:0 1px 2px rgba(20,32,43,.04),0 12px 32px rgba(20,32,43,.06);
+    overflow:hidden;
+  }
+  .head{ padding:26px 28px 20px; border-bottom:1px solid var(--mist); }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--signal); margin:0 0 6px;
+  }
+  h1{ font-size:22px; line-height:1.2; margin:0 0 4px; letter-spacing:-.01em; }
+  .head p{ margin:0; color:var(--slate); font-size:14px; }
+
+  form{ padding:22px 28px 28px; }
+  .field{ margin-bottom:18px; }
+  label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  label .opt{ font-weight:400; color:var(--slate); }
+  input,select,textarea{
+    width:100%; font-family:var(--sans); font-size:15px; color:var(--ink);
+    background:var(--white); border:1px solid var(--mist); border-radius:9px;
+    padding:11px 12px; transition:border-color .15s, box-shadow .15s;
+  }
+  select{ appearance:none; -webkit-appearance:none; background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%233d5163' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 13px center; padding-right:34px; }
+  textarea{ resize:vertical; min-height:108px; }
+  input:focus,select:focus,textarea:focus{
+    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(31,138,138,.18);
+  }
+  .row{ display:flex; gap:14px; }
+  .row .field{ flex:1; }
+  @media (max-width:460px){ .row{ flex-direction:column; gap:0; } }
+
+  /* file upload */
+  .file-btn{
+    display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+    border:1px dashed var(--mist); border-radius:9px; padding:11px 14px;
+    font-size:14px; color:var(--slate); background:var(--paper);
+    transition:border-color .15s, color .15s;
+  }
+  .file-btn:hover{ border-color:var(--signal); color:var(--signalink); }
+  .file-btn input{ display:none; }
+  .file-info{ display:block; margin-top:7px; font-size:12.5px; color:var(--slate); }
+  .file-hint{ display:block; margin-top:6px; font-size:12px; color:var(--slate); }
+
+  /* honeypot */
+  .hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+
+  .btn{
+    width:100%; border:0; border-radius:9px; cursor:pointer;
+    background:var(--signal); color:var(--white);
+    font-family:var(--sans); font-size:15px; font-weight:600;
+    padding:13px 16px; margin-top:4px; transition:background .15s, transform .05s;
+  }
+  .btn:hover{ background:var(--signalink); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.6; cursor:default; }
+  .note{ margin:14px 0 0; font-size:12.5px; color:var(--slate); }
+
+  .alert{
+    display:none; margin-bottom:18px; padding:11px 13px; border-radius:9px;
+    font-size:13.5px; background:#fbeceb; color:var(--danger); border:1px solid #f0cbc8;
+  }
+  .alert.show{ display:block; }
+
+  /* SIGNATURE: success ticket stub */
+  .done{ display:none; padding:30px 28px 34px; text-align:center; }
+  .done.show{ display:block; }
+  .stub{
+    position:relative; margin:6px auto 0; max-width:380px;
+    background:var(--ink); color:#eaf2f2; border-radius:12px;
+    padding:24px 26px 26px; text-align:left;
+  }
+  .stub:before,.stub:after{
+    content:""; position:absolute; top:50%; width:18px; height:18px;
+    background:var(--white); border-radius:50%; transform:translateY(-50%);
+  }
+  .stub:before{ left:-9px; } .stub:after{ right:-9px; }
+  .stub .lbl{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:#7fb6b6; margin:0 0 4px;
+  }
+  .stub .id{ font-family:var(--mono); font-size:30px; font-weight:600;
+    letter-spacing:.03em; margin:0; color:#fff; }
+  .stub .dash{ border:0; border-top:1px dashed #3a5560; margin:16px 0; }
+  .stub .meta{ font-size:13px; color:#c4d6d6; margin:0; }
+  .done h2{ font-size:19px; margin:0 0 6px; }
+  .done p.sub{ color:var(--slate); font-size:14px; margin:0 0 18px; }
+  .linkbtn{
+    display:inline-block; margin-top:20px; background:none; border:0;
+    color:var(--signal); font-weight:600; font-size:14px; cursor:pointer; font-family:var(--sans);
+  }
+  .linkbtn:hover{ color:var(--signalink); text-decoration:underline; }
+
+  @media (prefers-reduced-motion:no-preference){
+    .done.show .stub{ animation:rise .35s ease both; }
+    @keyframes rise{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="head">
+      <p class="eyebrow">IT Support</p>
+      <h1>Submit a support ticket</h1>
+      <p>Tell us what's going on. You'll get a ticket number by email and updates as we work on it.</p>
+    </div>
+
+    <form id="ticketForm" novalidate>
+      <div class="alert" id="formError"></div>
+
+      <div class="row">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="department">Department</label>
+          <select id="department" name="department" required>
+            <option value="" disabled selected>Select department</option>
+            <option>Finance</option>
+            <option>Secretary</option>
+            <option>Human Resources</option>
+            <option>Operations</option>
+            <option>Marketing</option>
+            <option>Sales</option>
+            <option>Legal</option>
+            <option>IT</option>
+            <option>Management</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="subject">Subject</label>
+        <input id="subject" name="subject" type="text"
+               placeholder="One line: what's the problem?" required />
+      </div>
+
+      <div class="field">
+        <label for="description">Description <span class="opt">— optional</span></label>
+        <textarea id="description" name="description"
+          placeholder="What happened, any error messages, and when it started."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="attachment">Attachment <span class="opt">— optional</span></label>
+        <label class="file-btn" for="attachment">
+          📎 Choose a screenshot or file
+          <input id="attachment" name="attachment" type="file"
+                 accept="image/*,.pdf" />
+        </label>
+        <span class="file-info" id="fileInfo"></span>
+        <span class="file-hint">Images or PDF, up to 10&nbsp;MB.</span>
+      </div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="company_url">Company URL</label>
+        <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button class="btn" id="submitBtn" type="submit">Submit ticket</button>
+      <p class="note">Required: name, work email, department, and subject.</p>
+    </form>
+
+    <div class="done" id="done">
+      <h2>Ticket received</h2>
+      <p class="sub">A confirmation is on its way to your inbox.</p>
+      <div class="stub">
+        <p class="lbl">Ticket ID</p>
+        <p class="id" id="ticketId">TKT-0000</p>
+        <hr class="dash" />
+        <p class="meta">Keep this number — quote it in any follow-up.</p>
+      </div>
+      <button class="linkbtn" id="another" type="button">Submit another ticket</button>
+    </div>
+  </main>
+
+<script>
+  // ====================================================================
+  // 1) PASTE YOUR WEB APP URL HERE (the .../exec link from Apps Script).
+  // ====================================================================
+  const WEB_APP_URL = "PASTE_YOUR_WEB_APP_EXEC_URL_HERE";
+
+  const MAX_MB = 10;
+  const form   = document.getElementById("ticketForm");
+  const errBox = document.getElementById("formError");
+  const btn    = document.getElementById("submitBtn");
+  const doneEl = document.getElementById("done");
+  const fileInput = document.getElementById("attachment");
+  const fileInfo  = document.getElementById("fileInfo");
+
+  function showError(msg){ errBox.textContent = msg; errBox.classList.add("show"); }
+  function clearError(){ errBox.textContent = ""; errBox.classList.remove("show"); }
+
+  fileInput.addEventListener("change", function(){
+    clearError();
+    const f = fileInput.files[0];
+    if (!f){ fileInfo.textContent = ""; return; }
+    if (f.size > MAX_MB * 1024 * 1024){
+      showError("That file is too big (max " + MAX_MB + " MB). Please attach a smaller one.");
+      fileInput.value = ""; fileInfo.textContent = ""; return;
+    }
+    fileInfo.textContent = f.name + " · " + (f.size/1024/1024).toFixed(1) + " MB";
+  });
+
+  function readFileAsBase64(file){
+    return new Promise(function(resolve, reject){
+      const r = new FileReader();
+      r.onload = function(){
+        const result = String(r.result);
+        const comma = result.indexOf(",");
+        resolve({
+          data: comma !== -1 ? result.slice(comma + 1) : result,
+          name: file.name,
+          type: file.type || "application/octet-stream"
+        });
+      };
+      r.onerror = function(){ reject(new Error("read failed")); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  form.addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    clearError();
+
+    const name       = document.getElementById("name").value.trim();
+    const email      = document.getElementById("email").value.trim();
+    const department = document.getElementById("department").value;
+    const subject    = document.getElementById("subject").value.trim();
+
+    if (!name || !email || !department || !subject) {
+      showError("Please fill in name, work email, department, and a subject.");
+      return;
+    }
+    if (email.indexOf("@") === -1) {
+      showError("That email address doesn't look right — please check it.");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Submitting…";
+
+    const data = new URLSearchParams();
+    data.append("name", name);
+    data.append("email", email);
+    data.append("department", department);
+    data.append("priority", document.getElementById("priority").value);
+    data.append("subject", subject);
+    data.append("description", document.getElementById("description").value.trim());
+    data.append("company_url", document.getElementById("company_url").value); // honeypot
+
+    const f = fileInput.files[0];
+    if (f){
+      try {
+        const att = await readFileAsBase64(f);
+        data.append("attachment_data", att.data);
+        data.append("attachment_name", att.name);
+        data.append("attachment_type", att.type);
+      } catch (e) {
+        showError("Couldn't read the attachment. Remove it or try a different file.");
+        btn.disabled = false; btn.textContent = "Submit ticket"; return;
+      }
+    }
+
+    try {
+      const res  = await fetch(WEB_APP_URL, { method: "POST", body: data });
+      const json = await res.json();
+      if (json && json.ok) {
+        document.getElementById("ticketId").textContent = json.ticketId;
+        form.style.display = "none";
+        doneEl.classList.add("show");
+      } else {
+        showError((json && json.error) ? json.error : "Something went wrong. Please try again.");
+      }
+    } catch (e) {
+      showError("Couldn't reach the server. Check your connection and try again.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Submit ticket";
+    }
+  });
+
+  document.getElementById("another").addEventListener("click", function () {
+    form.reset();
+    fileInfo.textContent = "";
+    doneEl.classList.remove("show");
+    form.style.display = "";
+    document.getElementById("name").focus();
+  });
+</script>
+</body>
+</html>
