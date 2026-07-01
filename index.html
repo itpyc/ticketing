@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>IT Support — Submit a Ticket</title>
+<link rel="icon" type="image/png" href="favicon.png" />
 <style>
   /* =====================================================================
      PALETTE — calm help-desk
@@ -14,7 +15,7 @@
      ===================================================================== */
   :root{
     --ink:#14202b; --slate:#3d5163; --mist:#e7edf2; --paper:#f6f8fa;
-    --signal:#1f8a8a; --signalink:#125f5f; --danger:#b4322a; --white:#fff;
+    --signal:#8a7400; --signalink:#6d5c00; --gold:#cab000; --danger:#b4322a; --white:#fff;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
   }
@@ -22,7 +23,7 @@
   body{
     margin:0; background:var(--paper); color:var(--ink);
     font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
-    display:flex; justify-content:center; padding:32px 18px 64px;
+    display:flex; flex-direction:column; align-items:center; padding:32px 18px 40px;
   }
   .card{
     width:100%; max-width:560px; background:var(--white);
@@ -38,6 +39,15 @@
   h1{ font-size:22px; line-height:1.2; margin:0 0 4px; letter-spacing:-.01em; }
   .head p{ margin:0; color:var(--slate); font-size:14px; }
 
+  /* header logo */
+  .logo{ display:block; width:230px; max-width:70%; height:auto; margin-bottom:16px; }
+
+  /* footer / copyright */
+  .foot{
+    width:100%; max-width:560px; margin-top:18px; text-align:center;
+    font-size:12.5px; color:var(--slate);
+  }
+
   form{ padding:22px 28px 28px; }
   .field{ margin-bottom:18px; }
   label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
@@ -52,7 +62,7 @@
     background-repeat:no-repeat; background-position:right 13px center; padding-right:34px; }
   textarea{ resize:vertical; min-height:108px; }
   input:focus,select:focus,textarea:focus{
-    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(31,138,138,.18);
+    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(138,116,0,.18);
   }
   .row{ display:flex; gap:14px; }
   .row .field{ flex:1; }
@@ -75,11 +85,11 @@
 
   .btn{
     width:100%; border:0; border-radius:9px; cursor:pointer;
-    background:var(--signal); color:var(--white);
+    background:var(--ink); color:var(--white);
     font-family:var(--sans); font-size:15px; font-weight:600;
     padding:13px 16px; margin-top:4px; transition:background .15s, transform .05s;
   }
-  .btn:hover{ background:var(--signalink); }
+  .btn:hover{ background:#22323f; }
   .btn:active{ transform:translateY(1px); }
   .btn:disabled{ opacity:.6; cursor:default; }
   .note{ margin:14px 0 0; font-size:12.5px; color:var(--slate); }
@@ -105,10 +115,10 @@
   .stub:before{ left:-9px; } .stub:after{ right:-9px; }
   .stub .lbl{
     font-family:var(--mono); font-size:11px; letter-spacing:.14em;
-    text-transform:uppercase; color:#7fb6b6; margin:0 0 4px;
+    text-transform:uppercase; color:#c9b980; margin:0 0 4px;
   }
   .stub .id{ font-family:var(--mono); font-size:30px; font-weight:600;
-    letter-spacing:.03em; margin:0; color:#fff; }
+    letter-spacing:.03em; margin:0; color:var(--gold); }
   .stub .dash{ border:0; border-top:1px dashed #3a5560; margin:16px 0; }
   .stub .meta{ font-size:13px; color:#c4d6d6; margin:0; }
   .done h2{ font-size:19px; margin:0 0 6px; }
@@ -128,9 +138,10 @@
 <body>
   <main class="card">
     <div class="head">
-      <p class="eyebrow">PYC IT Support</p>
+      <img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" />
+      <p class="eyebrow">IT Support</p>
       <h1>Submit a support ticket</h1>
-      <p>Tell us what's going on :)</p>
+      <p>Tell us what's going on. You'll get a ticket number by email and updates as we work on it.</p>
     </div>
 
     <form id="ticketForm" novalidate>
@@ -152,13 +163,13 @@
           <label for="department">Department</label>
           <select id="department" name="department" required>
             <option value="" disabled selected>Select department</option>
-            <option>Research</option>
-            <option>Secretariat</option>
-            <option>APP</option>
-            <option>PSD</option>
-            <option>PGA</option>
-            <option>HR</option>
             <option>Finance</option>
+            <option>Secretary</option>
+            <option>Human Resources</option>
+            <option>Operations</option>
+            <option>Marketing</option>
+            <option>Sales</option>
+            <option>Legal</option>
             <option>IT</option>
             <option>Management</option>
             <option>Other</option>
@@ -177,24 +188,25 @@
 
       <div class="field">
         <label for="subject">Subject</label>
-        <input id="subject" name="subject" type="text" required />
+        <input id="subject" name="subject" type="text"
+               placeholder="One line: what's the problem?" required />
       </div>
 
       <div class="field">
         <label for="description">Description <span class="opt">— optional</span></label>
         <textarea id="description" name="description"
-          placeholder="What happened, any error messages, or when it started."></textarea>
+          placeholder="What happened, any error messages, and when it started."></textarea>
       </div>
 
       <div class="field">
         <label for="attachment">Attachment <span class="opt">— optional</span></label>
         <label class="file-btn" for="attachment">
-          📎 Choose a screenshot
+          📎 Choose a screenshot or file
           <input id="attachment" name="attachment" type="file"
-                 accept="image/*" />
+                 accept="image/*,.pdf" />
         </label>
         <span class="file-info" id="fileInfo"></span>
-        <span class="file-hint">File size up to 10&nbsp;MB.</span>
+        <span class="file-hint">Images or PDF, up to 10&nbsp;MB.</span>
       </div>
 
       <div class="hp" aria-hidden="true">
@@ -219,11 +231,13 @@
     </div>
   </main>
 
+  <footer class="foot">© 2026 The Purnomo Yusgiantoro Center. All rights reserved.</footer>
+
 <script>
   // ====================================================================
   // 1) PASTE YOUR WEB APP URL HERE (the .../exec link from Apps Script).
   // ====================================================================
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby1NmJJvkSCMJO08cDv79uKIRv0UKdOfr20304LhAhaAfFKhbw0cvc88xWOfbJTlYTZ/exec";
+  const WEB_APP_URL = "PASTE_YOUR_WEB_APP_EXEC_URL_HERE";
 
   const MAX_MB = 10;
   const form   = document.getElementById("ticketForm");
