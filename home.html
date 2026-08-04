@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layanan Internal — The Purnomo Yusgiantoro Center</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<style>
+  :root{
+    --ink:#14202b; --slate:#3d5163; --mist:#e7edf2; --paper:#f6f8fa;
+    --signal:#8a7400; --signalink:#6d5c00; --gold:#cab000; --white:#fff;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; padding:40px 18px 44px;
+  }
+
+  .head{ width:100%; max-width:720px; text-align:center; margin-bottom:28px; }
+  .logo{ display:block; width:150px; max-width:55%; height:auto; margin:0 auto 18px; }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--signal); margin:0 0 8px;
+  }
+  h1{ font-size:26px; line-height:1.15; margin:0 0 6px; letter-spacing:-.01em; }
+  .head p{ margin:0 auto; max-width:440px; color:var(--slate); font-size:14.5px; }
+
+  .grid{
+    width:100%; max-width:720px;
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  }
+  @media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    position:relative; display:flex; flex-direction:column;
+    background:var(--white); border:1px solid var(--mist); border-radius:14px;
+    padding:20px 20px 18px; text-decoration:none; color:inherit;
+    box-shadow:0 1px 2px rgba(20,32,43,.04);
+    transition:transform .12s, box-shadow .15s, border-color .15s;
+  }
+  .card::before{
+    content:""; position:absolute; left:20px; right:20px; top:0; height:3px;
+    border-radius:0 0 3px 3px; background:var(--gold); opacity:.9;
+  }
+  a.card:hover{
+    transform:translateY(-2px); border-color:#d8cfae;
+    box-shadow:0 10px 26px rgba(20,32,43,.09);
+  }
+  a.card:focus-visible{ outline:2px solid var(--signal); outline-offset:2px; }
+
+  .code{
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+    color:var(--signal); margin-bottom:12px;
+  }
+  .icon{ width:30px; height:30px; color:var(--signal); margin-bottom:12px; }
+  .icon svg{ width:100%; height:100%; display:block; }
+  .name{ font-size:17px; font-weight:700; margin:0 0 16px; }
+
+  .go{
+    display:inline-flex; align-self:flex-start; align-items:center; gap:6px;
+    font-size:13.5px; font-weight:600; color:var(--ink);
+  }
+  .go .arrow{ transition:transform .15s; }
+  a.card:hover .go .arrow{ transform:translateX(3px); }
+
+  .soon{
+    display:inline-block; align-self:flex-start; font-size:11.5px; font-weight:600;
+    color:var(--slate); background:var(--paper);
+    border:1px solid var(--mist); border-radius:20px; padding:3px 10px;
+  }
+
+  /* muted state for modules not yet live */
+  .card.muted{ background:#fbfcfd; }
+  .card.muted::before{ background:var(--mist); opacity:1; }
+  .card.muted .code,
+  .card.muted .icon,
+  .card.muted .name{ color:var(--slate); }
+  .card.muted .icon{ opacity:.6; }
+
+  .foot{
+    width:100%; max-width:720px; margin-top:30px; text-align:center;
+    font-size:12.5px; color:var(--slate);
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .card, .go .arrow{ transition:none; }
+  }
+</style>
+</head>
+<body>
+  <header class="head">
+    <img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" />
+    <h1>Layanan Internal PYC</h1>
+    <p>Pilih layanan di bawah untuk mengirim permintaan. Setiap permintaan tercatat dan ditindaklanjuti oleh tim terkait.</p>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <footer class="foot">© 2026 The Purnomo Yusgiantoro Center. All rights reserved.</footer>
+
+<script>
+  // ====================================================================
+  // MODULES — to launch a new one later: set active:true and point href
+  // to its form page (e.g. 'ga.html'). Order here is the order on screen.
+  // ====================================================================
+  const MODULES = [
+    {
+      code: 'PYCIT',
+      name: 'IT Support',
+      href: 'it.html',
+      active: true,
+      icon: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/>'
+    },
+    {
+      code: 'PYCGA',
+      name: 'General Affairs',
+      href: 'ga.html',
+      active: false,
+      icon: '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>'
+    },
+    {
+      code: 'PYCHR',
+      name: 'HRD',
+      href: 'hr.html',
+      active: false,
+      icon: '<circle cx="9" cy="8" r="3"/><path d="M3.5 20c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17.5" cy="9" r="2.3"/><path d="M15 15.2c2.6-.3 5 1.5 5 4.8"/>'
+    },
+    {
+      code: 'PYCAG',
+      name: 'Request Agenda',
+      href: 'agenda.html',
+      active: false,
+      icon: '<rect x="4" y="5" width="16" height="15" rx="1.5"/><path d="M4 9.5h16M8 3v4M16 3v4"/>'
+    }
+  ];
+
+  const svg = (paths) =>
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+    paths + '</svg>';
+
+  const grid = document.getElementById('grid');
+
+  MODULES.forEach(function (m) {
+    const inner =
+      '<div class="icon">' + svg(m.icon) + '</div>' +
+      '<h2 class="name">' + m.name + '</h2>' +
+      (m.active
+        ? '<span class="go">Buka <span class="arrow">→</span></span>'
+        : '<span class="soon">Segera hadir</span>');
+
+    let el;
+    if (m.active) {
+      el = document.createElement('a');
+      el.className = 'card';
+      el.href = m.href;
+    } else {
+      el = document.createElement('div');
+      el.className = 'card muted';
+      el.setAttribute('aria-disabled', 'true');
+    }
+    el.innerHTML = inner;
+    grid.appendChild(el);
+  });
+</script>
+</body>
+</html>
