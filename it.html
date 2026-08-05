@@ -40,7 +40,8 @@
   .head p{ margin:0; color:var(--slate); font-size:14px; }
 
   /* header logo */
-  .logo{ display:block; width:120px; max-width:60%; height:auto; margin:0 auto 16px; }
+  .logo{ display:block; width:120px; max-width:60%; height:auto; margin:0 auto 16px; transition:opacity .15s; }
+  a:hover .logo{ opacity:.75; }
 
   /* footer / copyright */
   .foot{
@@ -138,7 +139,7 @@
 <body>
   <main class="card">
     <div class="head">
-      <img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" />
+      <a href="index.html" aria-label="Kembali ke Home"><img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" /></a>
       <p class="eyebrow">IT Support</p>
       <h1>Submit a support ticket</h1>
       <p>Tell us what's going on. You'll get a ticket number by email and updates as we work on it.</p>
