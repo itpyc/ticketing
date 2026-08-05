@@ -21,14 +21,19 @@
   }
   *{box-sizing:border-box;}
   body{
-    margin:0; background:var(--paper); color:var(--ink);
+    margin:0; color:var(--ink);
+    background:
+      radial-gradient(900px 480px at 50% -8%, #fbf3d8, rgba(251,243,216,0)),
+      linear-gradient(180deg, #fbf7ec 0%, #f4f6f4 100%);
+    background-color:#f7f4ea;
     font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
     display:flex; flex-direction:column; align-items:center; padding:32px 18px 40px;
+    min-height:100vh;
   }
   .card{
     width:100%; max-width:560px; background:var(--white);
-    border:1px solid var(--mist); border-radius:14px;
-    box-shadow:0 1px 2px rgba(20,32,43,.04),0 12px 32px rgba(20,32,43,.06);
+    border:1px solid #ece4cf; border-radius:14px;
+    box-shadow:0 1px 2px rgba(20,32,43,.04),0 18px 40px rgba(120,96,10,.10);
     overflow:hidden;
   }
   .head{ padding:26px 28px 20px; border-bottom:1px solid var(--mist); }
