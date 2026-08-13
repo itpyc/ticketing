@@ -159,8 +159,8 @@
           <input id="name" name="name" type="text" autocomplete="name" required />
         </div>
         <div class="field">
-          <label for="email">Work email <span class="opt">— optional</span></label>
-          <input id="email" name="email" type="email" autocomplete="email" />
+          <label for="email">Work email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
         </div>
       </div>
 
@@ -212,7 +212,7 @@
       </div>
 
       <button class="btn" id="submitBtn" type="submit">Submit request</button>
-      <p class="note">Required: name, department, and subject. Email is optional (for updates).</p>
+      <p class="note">Required: name, work email, department, and subject.</p>
     </form>
 
     <div class="done" id="done">
@@ -284,11 +284,11 @@
     const department = document.getElementById("department").value;
     const subject    = document.getElementById("subject").value.trim();
 
-    if (!name || !department || !subject) {
-      showError("Please fill in name, department, and a subject.");
+    if (!name || !email || !department || !subject) {
+      showError("Please fill in name, work email, department, and a subject.");
       return;
     }
-    if (email && email.indexOf("@") === -1) {
+    if (email.indexOf("@") === -1) {
       showError("That email address doesn't look right — please check it.");
       return;
     }
