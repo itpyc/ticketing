@@ -168,18 +168,18 @@
 
       <div class="field">
         <label for="departemen">Departemen atau Divisi Kegiatan <span class="req">*</span></label>
-        <p class="hint">Dana konsumsi/kebutuhan tertentu diambil dari anggaran departemen/divisi yang diisi.</p>
+        <p class="hint">Dana konsumsi/kebutuhan tertentu diambil dari anggaran departemen/divisi yang diisi.<br>Contoh opsi "Lainnya":<br>&ndash; Divisi HPD IEC 2023<br>&ndash; Latihan Menari (di bawah anggaran Bapak Purnomo)</p>
         <select id="departemen" name="departemen" required>
           <option value="" disabled selected>Pilih departemen/divisi</option>
-          <option>Dept. Penelitian (RAD)</option>
-          <option>Dept. Perpustakaan dan Sumber Data (LDR)</option>
-          <option>Dept. Acara, Promosi, dan Publikasi (EAP)</option>
-          <option>Dept. Sumber Daya Manusia (HRD)</option>
-          <option>Dept. Keuangan dan Akuntansi (FAD)</option>
-          <option>Dept. Sekretariat (SEC)</option>
-          <option>Dept. Pengelolaan Gedung dan Aset (BAM)</option>
-          <option>Dept. Teknologi Informasi (IT)</option>
-          <option value="__other__">Lainnya…</option>
+          <option>Penelitian</option>
+          <option>PSD</option>
+          <option>APP</option>
+          <option>SDM</option>
+          <option>Keuangan</option>
+          <option>Sekretariat</option>
+          <option>PGA</option>
+          <option>IT</option>
+          <option value="__other__">Lainnya&hellip;</option>
         </select>
         <input class="other" id="departemen_other" type="text" placeholder="Sebutkan divisi / anggaran (mis. Divisi HPD IEC 2023)" />
       </div>
@@ -277,7 +277,7 @@
 
       <div class="field">
         <label for="souvenir">Kebutuhan Cinderamata/Souvenir <span class="opt">— opsional</span></label>
-        <p class="hint">VIP: CD, Payung, Totebag, Tumblr, Flashdisk, Masker, Buku*. Umum: CD, Payung, Totebag, Masker. Contoh: VIP 5 pack; Umum 2 pack.</p>
+        <p class="hint">VIP: CD, Payung, Totebag, Tumblr, Flashdisk, Masker, Buku*<br>Umum: CD, Payung, Totebag, dan Masker<br>Isi dengan jenis dan jumlah cinderamata yang dibutuhkan. *Buku diberikan apabila ada permintaan.<br>Contoh:<br>&ndash; VIP 5 pack<br>&ndash; Umum 2 pack<br>&ndash; VIP 2 pack, Umum 1 pack<br>&ndash; Request tambahan 1 buku Ekonomi Energi, 2 buku Politik Energi</p>
         <textarea id="souvenir" name="souvenir"></textarea>
       </div>
 
