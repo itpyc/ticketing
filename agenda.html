@@ -257,14 +257,12 @@
       </div>
 
       <div class="field">
-        <label for="kendaraan">Kebutuhan Kendaraan <span class="opt">— opsional</span></label>
-        <p class="hint">Perhatikan daerah ganjil-genap dan sesuaikan dengan waktu kegiatan.</p>
-        <select id="kendaraan" name="kendaraan">
-          <option value="" selected>— Tidak perlu —</option>
-          <option>Pengantaran</option>
-          <option>Penjemputan</option>
-          <option>Pengantaran dan Penjemputan</option>
-        </select>
+        <label>Kebutuhan Kendaraan <span class="opt">— opsional</span></label>
+        <p class="hint">Perhatikan daerah ganjil-genap dan sesuaikan dengan waktu kegiatan. Bisa pilih lebih dari satu.</p>
+        <div class="checks" id="kendaraan">
+          <label><input type="checkbox" value="Pengantaran" /> Pengantaran</label>
+          <label><input type="checkbox" value="Penjemputan" /> Penjemputan</label>
+        </div>
       </div>
 
       <div class="field">
@@ -326,7 +324,7 @@
   // Paste the Web App /exec URL (Apps Script bound to the EXISTING recap
   // sheet) here.
   // ====================================================================
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrBx0CiYhyG6b4yV4rpCt4AcWyeWbCDXHRCzZg-b80OoQooX4Nf6gT_C1wg4zjWExA/exec";
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylEwj513JOiKAYaL9va5DMWTAa4mBMayQjAIdvp1L6urXAI9C1UmM-qxRSJscJGSWm/exec";
 
   const MAX_MB = 10;
   const form   = document.getElementById("agendaForm");
@@ -365,6 +363,15 @@
     const sel = document.getElementById(selectId);
     if(sel.value === "__other__") return val(otherId);
     return sel.value;
+  }
+
+  // gather kendaraan checkbox group into a comma string
+  function resolveKendaraan(){
+    const out = [];
+    document.querySelectorAll('#kendaraan input[type=checkbox]').forEach(function(cb){
+      if(cb.checked) out.push(cb.value);
+    });
+    return out.join(", ");
   }
 
   // gather checkbox group (dokumen penunjang) into a comma string
@@ -455,7 +462,7 @@
     data.append("media", resolveSelect("media", "media_other"));
     data.append("agenda", agenda);
     data.append("konsumsi", val("konsumsi"));
-    data.append("kendaraan", val("kendaraan"));
+    data.append("kendaraan", resolveKendaraan());
     data.append("dokumen_penunjang", resolveDokumen());
     data.append("souvenir", val("souvenir"));
     data.append("catatan", val("catatan"));
