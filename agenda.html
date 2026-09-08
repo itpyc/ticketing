@@ -1,1 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Request Agenda to Office Administration</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<style>
+  :root{
+    --ink:#14202b; --slate:#3d5163; --mist:#e7edf2; --paper:#f6f8fa;
+    --signal:#8a7400; --signalink:#6d5c00; --gold:#cab000; --danger:#b4322a; --white:#fff;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; color:var(--ink);
+    background:
+      radial-gradient(900px 480px at 50% -8%, #fbf3d8, rgba(251,243,216,0)),
+      linear-gradient(180deg, #fbf7ec 0%, #f4f6f4 100%);
+    background-color:#f7f4ea;
+    font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; padding:32px 18px 40px;
+    min-height:100vh;
+  }
+  .card{
+    width:100%; max-width:620px; background:var(--white);
+    border:1px solid #ece4cf; border-radius:14px;
+    box-shadow:0 1px 2px rgba(20,32,43,.04),0 18px 40px rgba(120,96,10,.10);
+    overflow:hidden;
+  }
+  .head{ padding:26px 28px 20px; border-bottom:1px solid var(--mist); }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--signal); margin:0 0 6px;
+  }
+  h1{ font-size:22px; line-height:1.2; margin:0 0 8px; letter-spacing:-.01em; }
+  .head p{ margin:0 0 8px; color:var(--slate); font-size:13.5px; }
+  .head .warn{ color:var(--danger); }
+  .head .contact{ font-size:12.5px; color:var(--slate); margin:8px 0 0; }
 
+  .logo{ display:block; width:120px; max-width:60%; height:auto; margin:0 auto 16px; transition:opacity .15s; }
+  a:hover .logo{ opacity:.75; }
+
+  .foot{
+    width:100%; max-width:620px; margin-top:18px; text-align:center;
+    font-size:12.5px; color:var(--slate);
+  }
+
+  form{ padding:22px 28px 28px; }
+  .field{ margin-bottom:18px; }
+  label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  label .opt{ font-weight:400; color:var(--slate); }
+  .req{ color:var(--danger); }
+  .hint{ font-weight:400; color:var(--slate); font-size:12px; margin:2px 0 8px; }
+  input,select,textarea{
+    width:100%; font-family:var(--sans); font-size:15px; color:var(--ink);
+    background:var(--white); border:1px solid var(--mist); border-radius:9px;
+    padding:11px 12px; transition:border-color .15s, box-shadow .15s;
+  }
+  select{ appearance:none; -webkit-appearance:none; background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%233d5163' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 13px center; padding-right:34px; }
+  textarea{ resize:vertical; min-height:92px; }
+  input:focus,select:focus,textarea:focus{
+    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(138,116,0,.18);
+  }
+  .row{ display:flex; gap:14px; }
+  .row > div{ flex:1; }
+  @media (max-width:480px){ .row{ flex-direction:column; gap:0; } }
+
+  .other{ margin-top:8px; display:none; }
+  .other.show{ display:block; }
+
+  /* checkbox / radio groups */
+  .checks{ display:flex; flex-direction:column; gap:8px; }
+  .checks label{ display:flex; align-items:center; gap:9px; font-weight:400; font-size:14px; margin:0; cursor:pointer; }
+  .checks input[type=checkbox], .checks input[type=radio]{ width:auto; margin:0; }
+
+  /* file upload */
+  .file-btn{
+    display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+    border:1px dashed var(--mist); border-radius:9px; padding:11px 14px;
+    font-size:14px; color:var(--slate); background:var(--paper);
+    transition:border-color .15s, color .15s;
+  }
+  .file-btn:hover{ border-color:var(--signal); color:var(--signalink); }
+  .file-btn input{ display:none; }
+  .file-info{ display:block; margin-top:7px; font-size:12.5px; color:var(--slate); }
+  .file-hint{ display:block; margin-top:6px; font-size:12px; color:var(--slate); }
+
+  .hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+
+  .btn{
+    width:100%; border:0; border-radius:9px; cursor:pointer;
+    background:var(--ink); color:var(--white);
+    font-family:var(--sans); font-size:15px; font-weight:600;
+    padding:13px 16px; margin-top:4px; transition:background .15s, transform .05s;
+  }
+  .btn:hover{ background:#22323f; }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.6; cursor:default; }
+  .note{ margin:14px 0 0; font-size:12.5px; color:var(--slate); }
+
+  .alert{
+    display:none; margin-bottom:18px; padding:11px 13px; border-radius:9px;
+    font-size:13.5px; background:#fbeceb; color:var(--danger); border:1px solid #f0cbc8;
+  }
+  .alert.show{ display:block; }
+
+  .done{ display:none; padding:30px 28px 34px; text-align:center; }
+  .done.show{ display:block; }
+  .stub{
+    position:relative; margin:6px auto 0; max-width:380px;
+    background:var(--ink); color:#eaf2f2; border-radius:12px;
+    padding:24px 26px 26px; text-align:left;
+  }
+  .stub:before,.stub:after{
+    content:""; position:absolute; top:50%; width:18px; height:18px;
+    background:var(--white); border-radius:50%; transform:translateY(-50%);
+  }
+  .stub:before{ left:-9px; } .stub:after{ right:-9px; }
+  .stub .lbl{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:#c9b980; margin:0 0 4px;
+  }
+  .stub .id{ font-family:var(--mono); font-size:26px; font-weight:600;
+    letter-spacing:.03em; margin:0; color:var(--gold); }
+  .stub .dash{ border:0; border-top:1px dashed #3a5560; margin:16px 0; }
+  .stub .meta{ font-size:13px; color:#c4d6d6; margin:0; }
+  .done h2{ font-size:19px; margin:0 0 6px; }
+  .done p.sub{ color:var(--slate); font-size:14px; margin:0 0 18px; }
+  .linkbtn{
+    display:inline-block; margin-top:20px; background:none; border:0;
+    color:var(--signal); font-weight:600; font-size:14px; cursor:pointer; font-family:var(--sans);
+  }
+  .linkbtn:hover{ color:var(--signalink); text-decoration:underline; }
+
+  @media (prefers-reduced-motion:no-preference){
+    .done.show .stub{ animation:rise .35s ease both; }
+    @keyframes rise{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="head">
+      <a href="index.html" aria-label="Kembali ke Home"><img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" /></a>
+      <p class="eyebrow">Office Administration</p>
+      <h1>Request Agenda to Office Administration</h1>
+      <p>Wajib diisi oleh Penanggung Jawab Kegiatan atau Perwakilan Departemen PYC <strong>maksimal H-1 kegiatan</strong>.</p>
+      <p class="warn">Jika diisi melewati batas waktu, Tim Kantor Administrasi tidak bertanggung jawab atas permintaan yang dimaksud.</p>
+      <p class="contact">Info lebih lanjut — Telepon (021) 720 3917 · WhatsApp +62 811-1888-932 (PYC Official Account).</p>
+    </div>
+
+    <form id="agendaForm" novalidate>
+      <div class="alert" id="formError"></div>
+
+      <div class="field">
+        <label for="email">Email <span class="req">*</span></label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="nama_pj">Nama Penanggung Jawab <span class="req">*</span></label>
+        <input id="nama_pj" name="nama_pj" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="departemen">Departemen atau Divisi Kegiatan <span class="req">*</span></label>
+        <p class="hint">Dana konsumsi/kebutuhan tertentu diambil dari anggaran departemen/divisi yang diisi.</p>
+        <select id="departemen" name="departemen" required>
+          <option value="" disabled selected>Pilih departemen/divisi</option>
+          <option>Dept. Penelitian (RAD)</option>
+          <option>Dept. Perpustakaan dan Sumber Data (LDR)</option>
+          <option>Dept. Acara, Promosi, dan Publikasi (EAP)</option>
+          <option>Dept. Sumber Daya Manusia (HRD)</option>
+          <option>Dept. Keuangan dan Akuntansi (FAD)</option>
+          <option>Dept. Sekretariat (SEC)</option>
+          <option>Dept. Pengelolaan Gedung dan Aset (BAM)</option>
+          <option>Dept. Teknologi Informasi (IT)</option>
+          <option value="__other__">Lainnya…</option>
+        </select>
+        <input class="other" id="departemen_other" type="text" placeholder="Sebutkan divisi / anggaran (mis. Divisi HPD IEC 2023)" />
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="mulai_date">Tanggal &amp; Waktu — Mulai <span class="req">*</span></label>
+          <input id="mulai_date" type="date" required />
+          <input id="mulai_time" type="time" required style="margin-top:8px" />
+        </div>
+        <div class="field">
+          <label for="selesai_date">Tanggal &amp; Waktu — Selesai <span class="req">*</span></label>
+          <input id="selesai_date" type="date" required />
+          <input id="selesai_time" type="time" required style="margin-top:8px" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="nama_kegiatan">Nama Kegiatan <span class="req">*</span></label>
+        <input id="nama_kegiatan" name="nama_kegiatan" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="nama_peserta">Nama Peserta <span class="req">*</span></label>
+        <p class="hint">Beri tanda bintang (*) pada pemimpin rapat. Contoh: Djamil*, Chiro, Kimi, Bruno</p>
+        <textarea id="nama_peserta" name="nama_peserta" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="lokasi">Lokasi Kegiatan Luring <span class="opt">— opsional</span></label>
+        <p class="hint">Pilih "Lainnya" dan isi alamat lengkap untuk kegiatan di luar PYC.</p>
+        <select id="lokasi" name="lokasi">
+          <option value="" selected>— Tidak ada / daring —</option>
+          <option>Assembly Hall, Lt. 1 Kantor PYC Bulungan (R. Galeri)</option>
+          <option>Ruang Adriel, Lt. 1 Kantor PYC Bulungan (R. Tunggu VIP)</option>
+          <option>Ruang Belvia, Lt. 1 Kantor PYC Bulungan (R. Podcast)</option>
+          <option>Ruang Dilan, Lt. 2 Kantor PYC Bulungan (R. Multimedia)</option>
+          <option>Perpustakaan, Lt. 2 Kantor PYC Bulungan</option>
+          <option>Ruang Kelas, Lt. 3 Kantor PYC Bulungan</option>
+          <option>Command Center, Lt. 3 Kantor PYC Bulungan</option>
+          <option>Ruang Brafa, Lt. 4 Kantor PYC Bulungan</option>
+          <option>Ruang Alfiro, Lt. 4 Kantor PYC Bulungan</option>
+          <option>Ruang Purnomo, Lt. 5 Kantor PYC Bulungan</option>
+          <option>Ruang Lis, Lt. 5 Kantor PYC Bulungan</option>
+          <option value="__other__">Lainnya…</option>
+        </select>
+        <input class="other" id="lokasi_other" type="text" placeholder="Alamat lengkap lokasi luar PYC" />
+      </div>
+
+      <div class="field">
+        <label for="media">Media Kegiatan Daring/Hybrid <span class="opt">— opsional</span></label>
+        <p class="hint">Tim Kantor Administrasi akan membuat link meeting sesuai pilihan. Untuk link eksternal, pilih "Lainnya".</p>
+        <select id="media" name="media">
+          <option value="" selected>— Tidak ada / luring —</option>
+          <option>Zoom Meeting PYC</option>
+          <option>Google Meet PYC</option>
+          <option>Microsoft Teams PYC</option>
+          <option value="__other__">Lainnya…</option>
+        </select>
+        <input class="other" id="media_other" type="text" placeholder="Sebutkan media / link eksternal" />
+      </div>
+
+      <div class="field">
+        <label for="agenda">Agenda Pembahasan <span class="req">*</span></label>
+        <p class="hint">Detail agenda untuk bahan deskripsi GCal atau Surat Tugas jika diperlukan.</p>
+        <textarea id="agenda" name="agenda" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="konsumsi">Kebutuhan Konsumsi dan Teknis lainnya <span class="opt">— opsional</span></label>
+        <p class="hint">Contoh: 10 Snack; 5 Snack &amp; 5 Makanan Berat; Proyektor, Kabel Roll, Kamera, dsb.</p>
+        <textarea id="konsumsi" name="konsumsi"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="kendaraan">Kebutuhan Kendaraan <span class="opt">— opsional</span></label>
+        <p class="hint">Perhatikan daerah ganjil-genap dan sesuaikan dengan waktu kegiatan.</p>
+        <select id="kendaraan" name="kendaraan">
+          <option value="" selected>— Tidak perlu —</option>
+          <option>Pengantaran</option>
+          <option>Penjemputan</option>
+          <option>Pengantaran dan Penjemputan</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Kebutuhan Dokumen Penunjang <span class="opt">— opsional</span></label>
+        <div class="checks" id="dokumen">
+          <label><input type="checkbox" value="Surat Tugas" /> Surat Tugas</label>
+          <label><input type="checkbox" value="Memo" /> Memo</label>
+          <label><input type="checkbox" id="dokumen_other_cb" value="__other__" /> Lainnya…</label>
+        </div>
+        <input class="other" id="dokumen_other" type="text" placeholder="Sebutkan dokumen lain" />
+      </div>
+
+      <div class="field">
+        <label for="souvenir">Kebutuhan Cinderamata/Souvenir <span class="opt">— opsional</span></label>
+        <p class="hint">VIP: CD, Payung, Totebag, Tumblr, Flashdisk, Masker, Buku*. Umum: CD, Payung, Totebag, Masker. Contoh: VIP 5 pack; Umum 2 pack.</p>
+        <textarea id="souvenir" name="souvenir"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="attachment">Dokumen Pendukung <span class="opt">— opsional</span></label>
+        <p class="hint">Bukti pendukung seperti flyer, surat undangan, dsb.</p>
+        <label class="file-btn" for="attachment">
+          📎 Pilih file (gambar atau PDF)
+          <input id="attachment" name="attachment" type="file" accept="image/*,.pdf" />
+        </label>
+        <span class="file-info" id="fileInfo"></span>
+        <span class="file-hint">Gambar atau PDF, maksimal 10&nbsp;MB.</span>
+      </div>
+
+      <div class="field">
+        <label for="catatan">Catatan Tambahan <span class="opt">— opsional</span></label>
+        <textarea id="catatan" name="catatan"></textarea>
+      </div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="company_url">Company URL</label>
+        <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button class="btn" id="submitBtn" type="submit">Kirim permintaan agenda</button>
+      <p class="note">Kolom bertanda <span class="req">*</span> wajib diisi.</p>
+    </form>
+
+    <div class="done" id="done">
+      <div class="stub">
+        <p class="lbl">Berhasil</p>
+        <p class="id">✓ Terkirim</p>
+        <hr class="dash" />
+        <p class="meta">Permintaanmu sudah masuk ke Tim Kantor Administrasi dan akan ditindaklanjuti.</p>
+      </div>
+      <button class="linkbtn" id="another" type="button">Kirim permintaan lain</button>
+    </div>
+  </main>
+
+  <footer class="foot">© 2026 The Purnomo Yusgiantoro Center. All rights reserved.</footer>
+
+<script>
+  // ====================================================================
+  // Paste the Web App /exec URL (Apps Script bound to the EXISTING recap
+  // sheet) here.
+  // ====================================================================
+  const WEB_APP_URL = "PASTE_YOUR_WEB_APP_EXEC_URL_HERE";
+
+  const MAX_MB = 10;
+  const form   = document.getElementById("agendaForm");
+  const errBox = document.getElementById("formError");
+  const btn    = document.getElementById("submitBtn");
+  const doneEl = document.getElementById("done");
+  const fileInput = document.getElementById("attachment");
+  const fileInfo  = document.getElementById("fileInfo");
+
+  function showError(msg){ errBox.textContent = msg; errBox.classList.add("show"); window.scrollTo({top:0,behavior:'smooth'}); }
+  function clearError(){ errBox.textContent = ""; errBox.classList.remove("show"); }
+  function val(id){ return (document.getElementById(id).value || "").trim(); }
+
+  // --- reveal "Lainnya" text inputs ---
+  function bindOther(selectId, otherId){
+    const sel = document.getElementById(selectId);
+    const other = document.getElementById(otherId);
+    sel.addEventListener("change", function(){
+      const on = sel.value === "__other__";
+      other.classList.toggle("show", on);
+      if(!on) other.value = "";
+    });
+  }
+  bindOther("departemen", "departemen_other");
+  bindOther("lokasi", "lokasi_other");
+  bindOther("media", "media_other");
+
+  document.getElementById("dokumen_other_cb").addEventListener("change", function(){
+    const other = document.getElementById("dokumen_other");
+    other.classList.toggle("show", this.checked);
+    if(!this.checked) other.value = "";
+  });
+
+  // resolve a select-with-other to its final string
+  function resolveSelect(selectId, otherId){
+    const sel = document.getElementById(selectId);
+    if(sel.value === "__other__") return val(otherId);
+    return sel.value;
+  }
+
+  // gather checkbox group (dokumen penunjang) into a comma string
+  function resolveDokumen(){
+    const out = [];
+    document.querySelectorAll('#dokumen input[type=checkbox]').forEach(function(cb){
+      if(cb.checked){
+        if(cb.value === "__other__"){ const o = val("dokumen_other"); if(o) out.push(o); }
+        else out.push(cb.value);
+      }
+    });
+    return out.join(", ");
+  }
+
+  fileInput.addEventListener("change", function(){
+    clearError();
+    const f = fileInput.files[0];
+    if (!f){ fileInfo.textContent = ""; return; }
+    if (f.size > MAX_MB * 1024 * 1024){
+      showError("Ukuran file terlalu besar (maks " + MAX_MB + " MB). Pilih file yang lebih kecil.");
+      fileInput.value = ""; fileInfo.textContent = ""; return;
+    }
+    fileInfo.textContent = f.name + " · " + (f.size/1024/1024).toFixed(1) + " MB";
+  });
+
+  function readFileAsBase64(file){
+    return new Promise(function(resolve, reject){
+      const r = new FileReader();
+      r.onload = function(){
+        const result = String(r.result);
+        const comma = result.indexOf(",");
+        resolve({ data: comma !== -1 ? result.slice(comma+1) : result, name: file.name, type: file.type || "application/octet-stream" });
+      };
+      r.onerror = function(){ reject(new Error("read failed")); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  function combine(dateId, timeId){
+    const d = val(dateId), t = val(timeId);
+    if(!d || !t) return "";
+    return d + " " + t;   // e.g. 2026-08-20 14:30
+  }
+
+  form.addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    clearError();
+
+    const email        = val("email");
+    const namaPj       = val("nama_pj");
+    const departemen   = resolveSelect("departemen", "departemen_other");
+    const mulai        = combine("mulai_date", "mulai_time");
+    const selesai      = combine("selesai_date", "selesai_time");
+    const namaKegiatan = val("nama_kegiatan");
+    const namaPeserta  = val("nama_peserta");
+    const agenda       = val("agenda");
+
+    if(!email || !namaPj || !departemen || !mulai || !selesai || !namaKegiatan || !namaPeserta || !agenda){
+      showError("Mohon lengkapi semua kolom bertanda * (termasuk tanggal dan waktu).");
+      return;
+    }
+    if(email.indexOf("@") === -1){
+      showError("Alamat email sepertinya tidak valid — mohon periksa kembali.");
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = "Mengirim…";
+
+    const data = new URLSearchParams();
+    data.append("email", email);
+    data.append("nama_pj", namaPj);
+    data.append("departemen", departemen);
+    data.append("waktu_mulai", mulai);
+    data.append("waktu_selesai", selesai);
+    data.append("nama_kegiatan", namaKegiatan);
+    data.append("nama_peserta", namaPeserta);
+    data.append("lokasi", resolveSelect("lokasi", "lokasi_other"));
+    data.append("media", resolveSelect("media", "media_other"));
+    data.append("agenda", agenda);
+    data.append("konsumsi", val("konsumsi"));
+    data.append("kendaraan", val("kendaraan"));
+    data.append("dokumen_penunjang", resolveDokumen());
+    data.append("souvenir", val("souvenir"));
+    data.append("catatan", val("catatan"));
+    data.append("company_url", val("company_url")); // honeypot
+
+    const f = fileInput.files[0];
+    if(f){
+      try{
+        const att = await readFileAsBase64(f);
+        data.append("attachment_data", att.data);
+        data.append("attachment_name", att.name);
+        data.append("attachment_type", att.type);
+      }catch(e){
+        showError("Gagal membaca lampiran. Hapus atau coba file lain.");
+        btn.disabled = false; btn.textContent = "Kirim permintaan agenda"; return;
+      }
+    }
+
+    try{
+      const res  = await fetch(WEB_APP_URL, { method:"POST", body:data });
+      const json = await res.json();
+      if(json && json.ok){
+        form.style.display = "none";
+        doneEl.classList.add("show");
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else {
+        showError((json && json.error) ? json.error : "Terjadi kesalahan. Coba lagi.");
+      }
+    }catch(e){
+      showError("Tidak dapat menghubungi server. Periksa koneksi lalu coba lagi.");
+    }finally{
+      btn.disabled = false; btn.textContent = "Kirim permintaan agenda";
+    }
+  });
+
+  document.getElementById("another").addEventListener("click", function(){
+    form.reset();
+    fileInfo.textContent = "";
+    document.querySelectorAll('.other').forEach(function(o){ o.classList.remove('show'); });
+    doneEl.classList.remove("show");
+    form.style.display = "";
+    document.getElementById("email").focus();
+  });
+</script>
+</body>
+</html>
