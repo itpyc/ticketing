@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peminjaman Aset — The Purnomo Yusgiantoro Center</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<style>
+  :root{
+    --ink:#14202b; --slate:#3d5163; --mist:#e7edf2; --paper:#f6f8fa;
+    --signal:#8a7400; --signalink:#6d5c00; --gold:#cab000; --danger:#b4322a; --white:#fff;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; color:var(--ink);
+    background:
+      radial-gradient(900px 480px at 50% -8%, #fbf3d8, rgba(251,243,216,0)),
+      linear-gradient(180deg, #fbf7ec 0%, #f4f6f4 100%);
+    background-color:#f7f4ea;
+    font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; padding:32px 18px 40px;
+    min-height:100vh;
+  }
+  .card{
+    width:100%; max-width:620px; background:var(--white);
+    border:1px solid #ece4cf; border-radius:14px;
+    box-shadow:0 1px 2px rgba(20,32,43,.04),0 18px 40px rgba(120,96,10,.10);
+    overflow:hidden;
+  }
+  .head{ padding:26px 28px 20px; border-bottom:1px solid var(--mist); }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--signal); margin:0 0 6px;
+  }
+  h1{ font-size:22px; line-height:1.2; margin:0 0 8px; letter-spacing:-.01em; }
+  .head p{ margin:0 0 8px; color:var(--slate); font-size:13.5px; }
+
+  .logo{ display:block; width:120px; max-width:60%; height:auto; margin:0 auto 16px; transition:opacity .15s; }
+  a:hover .logo{ opacity:.75; }
+
+  .foot{
+    width:100%; max-width:620px; margin-top:18px; text-align:center;
+    font-size:12.5px; color:var(--slate);
+  }
+
+  form{ padding:22px 28px 28px; }
+  .field{ margin-bottom:18px; }
+  label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  label .opt{ font-weight:400; color:var(--slate); }
+  .req{ color:var(--danger); }
+  .hint{ font-weight:400; color:var(--slate); font-size:12px; margin:2px 0 8px; }
+  input,select,textarea{
+    width:100%; font-family:var(--sans); font-size:15px; color:var(--ink);
+    background:var(--white); border:1px solid var(--mist); border-radius:9px;
+    padding:11px 12px; transition:border-color .15s, box-shadow .15s;
+  }
+  select{ appearance:none; -webkit-appearance:none; background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%233d5163' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 13px center; padding-right:34px; }
+  textarea{ resize:vertical; min-height:80px; }
+  input:focus,select:focus,textarea:focus{
+    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(138,116,0,.18);
+  }
+  input.invalid, select.invalid, textarea.invalid{
+    border-color:var(--danger); box-shadow:0 0 0 3px rgba(180,50,42,.15);
+  }
+  .row{ display:flex; gap:14px; }
+  .row > div{ flex:1; }
+  @media (max-width:480px){ .row{ flex-direction:column; gap:0; } }
+
+  .other{ margin-top:8px; display:none; }
+  .other.show{ display:block; }
+
+  /* agreement blocks */
+  .agree{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--paper); border:1px solid var(--mist); border-radius:9px;
+    padding:12px 13px; font-size:13px; color:var(--slate); line-height:1.5;
+  }
+  .agree input{ width:auto; margin:3px 0 0; flex:0 0 auto; }
+  .agree.invalid-block{ border-color:var(--danger); background:#fbeceb; }
+
+  /* file upload */
+  .file-btn{
+    display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+    border:1px dashed var(--mist); border-radius:9px; padding:11px 14px;
+    font-size:14px; color:var(--slate); background:var(--paper);
+    transition:border-color .15s, color .15s;
+  }
+  .file-btn:hover{ border-color:var(--signal); color:var(--signalink); }
+  .file-btn.invalid{ border-color:var(--danger); background:#fbeceb; }
+  .file-btn input{ display:none; }
+  .file-info{ display:block; margin-top:7px; font-size:12.5px; color:var(--slate); }
+  .file-hint{ display:block; margin-top:6px; font-size:12px; color:var(--slate); }
+
+  .hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+
+  .btn{
+    width:100%; border:0; border-radius:9px; cursor:pointer;
+    background:var(--ink); color:var(--white);
+    font-family:var(--sans); font-size:15px; font-weight:600;
+    padding:13px 16px; margin-top:4px; transition:background .15s, transform .05s;
+  }
+  .btn:hover{ background:#22323f; }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.6; cursor:default; }
+  .note{ margin:14px 0 0; font-size:12.5px; color:var(--slate); }
+
+  .alert{
+    display:none; margin-bottom:18px; padding:11px 13px; border-radius:9px;
+    font-size:13.5px; background:#fbeceb; color:var(--danger); border:1px solid #f0cbc8;
+  }
+  .alert.show{ display:block; }
+
+  .done{ display:none; padding:30px 28px 34px; text-align:center; }
+  .done.show{ display:block; }
+  .stub{
+    position:relative; margin:6px auto 0; max-width:380px;
+    background:var(--ink); color:#eaf2f2; border-radius:12px;
+    padding:24px 26px 26px; text-align:left;
+  }
+  .stub:before,.stub:after{
+    content:""; position:absolute; top:50%; width:18px; height:18px;
+    background:var(--white); border-radius:50%; transform:translateY(-50%);
+  }
+  .stub:before{ left:-9px; } .stub:after{ right:-9px; }
+  .stub .lbl{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:#c9b980; margin:0 0 4px;
+  }
+  .stub .id{ font-family:var(--mono); font-size:26px; font-weight:700;
+    letter-spacing:.03em; margin:0; color:#6ee7a0; }
+  .stub .dash{ border:0; border-top:1px dashed #3a5560; margin:16px 0; }
+  .stub .meta{ font-size:13px; color:#c4d6d6; margin:0; }
+  .linkbtn{
+    display:inline-block; margin-top:20px; background:none; border:0;
+    color:var(--signal); font-weight:600; font-size:14px; cursor:pointer; font-family:var(--sans);
+  }
+  .linkbtn:hover{ color:var(--signalink); text-decoration:underline; }
+
+  @media (prefers-reduced-motion:no-preference){
+    .done.show .stub{ animation:rise .35s ease both; }
+    @keyframes rise{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="head">
+      <a href="index.html" aria-label="Kembali ke Home"><img class="logo" src="logo.png" alt="The Purnomo Yusgiantoro Center" /></a>
+      <p class="eyebrow">Peminjaman Aset</p>
+      <h1>Formulir Peminjaman Aset</h1>
+      <p>Isi formulir berikut untuk mengajukan peminjaman aset. Permintaan akan dicatat dan ditindaklanjuti oleh tim terkait.</p>
+    </div>
+
+    <form id="asetForm" novalidate>
+      <div class="alert" id="formError"></div>
+
+      <div class="field">
+        <label for="email">Email <span class="req">*</span></label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="nama_pemohon">Nama Lengkap Pemohon <span class="req">*</span></label>
+        <input id="nama_pemohon" name="nama_pemohon" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="departemen">Departemen <span class="req">*</span></label>
+        <select id="departemen" name="departemen" required>
+          <option value="" disabled selected>Pilih departemen</option>
+          <option>Penelitian</option>
+          <option>PSD</option>
+          <option>APP</option>
+          <option>SDM</option>
+          <option>Keuangan</option>
+          <option>Sekretariat</option>
+          <option>PGA</option>
+          <option>IT</option>
+          <option value="__other__">Lainnya&hellip;</option>
+        </select>
+        <input class="other" id="departemen_other" type="text" placeholder="Sebutkan departemen / divisi" />
+      </div>
+
+      <div class="field">
+        <label for="barang">Barang yang dipinjam <span class="req">*</span></label>
+        <p class="hint">Sebutkan nama barang, jumlah, dan kode/merek barang.</p>
+        <textarea id="barang" name="barang" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="kondisi_sebelum">Kondisi barang sebelum dipinjam <span class="opt">— opsional</span></label>
+        <textarea id="kondisi_sebelum" name="kondisi_sebelum"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="kegiatan">Untuk Tindakan/Kegiatan <span class="req">*</span></label>
+        <input id="kegiatan" name="kegiatan" type="text" required />
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="tgl_pinjam">Tanggal Pinjam <span class="req">*</span></label>
+          <input id="tgl_pinjam" type="date" required />
+        </div>
+        <div class="field">
+          <label for="tgl_kembali">Tanggal Kembali <span class="req">*</span></label>
+          <input id="tgl_kembali" type="date" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="attachment">Lampirkan foto aset yang dipinjam <span class="req">*</span></label>
+        <p class="hint">Foto kondisi aset saat ini.</p>
+        <label class="file-btn" id="fileBtn" for="attachment">
+          📎 Pilih foto (gambar atau PDF)
+          <input id="attachment" name="attachment" type="file" accept="image/*,.pdf" required />
+        </label>
+        <span class="file-info" id="fileInfo"></span>
+        <span class="file-hint">Gambar atau PDF, maksimal 10&nbsp;MB.</span>
+      </div>
+
+      <div class="field" id="field-agree1">
+        <label class="agree">
+          <input type="checkbox" id="agree1" />
+          <span>Dengan ini saya bertanggung jawab menjaga agar Aset tidak ada kerusakan selama peminjaman juga bersedia mengembalikan Aset dalam waktu 2 minggu. Jika ternyata ditemukan kerusakan yang dikarenakan kelalaian pribadi (bukan kerusakan sebelum peminjaman), saya akan turut andil dalam perbaikan barang tersebut. <span class="req">*</span></span>
+        </label>
+      </div>
+
+      <div class="field" id="field-agree2">
+        <label class="agree">
+          <input type="checkbox" id="agree2" />
+          <span>Dengan ini saya menyatakan bahwa keterangan tersebut diatas adalah jujur dan benar. Jika dikemudian hari informasi tersebut diatas tidak benar, maka Yayasan Purnomo Yusgiantoro berhak memberikan sanksi yang seberat-beratnya tanpa perlu memberikan ganti rugi kepada saya. <span class="req">*</span></span>
+        </label>
+      </div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="company_url">Company URL</label>
+        <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button class="btn" id="submitBtn" type="submit">Ajukan peminjaman</button>
+      <p class="note">Kolom bertanda <span class="req">*</span> wajib diisi.</p>
+    </form>
+
+    <div class="done" id="done">
+      <div class="stub">
+        <p class="lbl">Request Submitted</p>
+        <p class="id">✓ Success</p>
+        <hr class="dash" />
+        <p class="meta">Pengajuan peminjaman Anda sudah masuk dan akan ditindaklanjuti oleh tim terkait.</p>
+      </div>
+      <button class="linkbtn" id="another" type="button">Ajukan peminjaman lain</button>
+    </div>
+  </main>
+
+  <footer class="foot">© 2026 The Purnomo Yusgiantoro Center. All rights reserved.</footer>
+
+<script>
+  // ====================================================================
+  // Paste the Web App /exec URL (Apps Script bound to the EXISTING
+  // peminjaman-aset recap sheet) here.
+  // ====================================================================
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwptn2SAi440JkVUOGWX_4OlaVQXO0cXJzCLuvIDRLEi59vu2DIXyuX4C9rOALFMEN0/exec";
+
+  const MAX_MB = 10;
+  const form   = document.getElementById("asetForm");
+  const errBox = document.getElementById("formError");
+  const btn    = document.getElementById("submitBtn");
+  const doneEl = document.getElementById("done");
+  const fileInput = document.getElementById("attachment");
+  const fileInfo  = document.getElementById("fileInfo");
+  const fileBtn   = document.getElementById("fileBtn");
+
+  function showError(msg){ errBox.textContent = msg; errBox.classList.add("show"); window.scrollTo({top:0,behavior:'smooth'}); }
+  function clearError(){ errBox.textContent = ""; errBox.classList.remove("show"); }
+  function val(id){ return (document.getElementById(id).value || "").trim(); }
+  function clearInvalid(){
+    document.querySelectorAll(".invalid").forEach(function(e){ e.classList.remove("invalid"); });
+    document.querySelectorAll(".invalid-block").forEach(function(e){ e.classList.remove("invalid-block"); });
+  }
+  form.addEventListener("input", function(e){ if(e.target && e.target.classList) e.target.classList.remove("invalid"); });
+
+  // reveal Departemen "Lainnya"
+  (function(){
+    const sel = document.getElementById("departemen");
+    const other = document.getElementById("departemen_other");
+    sel.addEventListener("change", function(){
+      const on = sel.value === "__other__";
+      other.classList.toggle("show", on);
+      if(!on) other.value = "";
+    });
+  })();
+  function resolveSelect(selectId, otherId){
+    const sel = document.getElementById(selectId);
+    if(sel.value === "__other__") return val(otherId);
+    return sel.value;
+  }
+
+  fileInput.addEventListener("change", function(){
+    clearError();
+    fileBtn.classList.remove("invalid");
+    const f = fileInput.files[0];
+    if (!f){ fileInfo.textContent = ""; return; }
+    if (f.size > MAX_MB * 1024 * 1024){
+      showError("Ukuran file terlalu besar (maks " + MAX_MB + " MB). Pilih file yang lebih kecil.");
+      fileInput.value = ""; fileInfo.textContent = ""; return;
+    }
+    fileInfo.textContent = f.name + " · " + (f.size/1024/1024).toFixed(1) + " MB";
+  });
+
+  function readFileAsBase64(file){
+    return new Promise(function(resolve, reject){
+      const r = new FileReader();
+      r.onload = function(){
+        const result = String(r.result);
+        const comma = result.indexOf(",");
+        resolve({ data: comma !== -1 ? result.slice(comma+1) : result, name: file.name, type: file.type || "application/octet-stream" });
+      };
+      r.onerror = function(){ reject(new Error("read failed")); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  form.addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    clearError();
+    clearInvalid();
+
+    const email       = val("email");
+    const namaPemohon = val("nama_pemohon");
+    const departemen  = resolveSelect("departemen", "departemen_other");
+    const barang      = val("barang");
+    const kegiatan    = val("kegiatan");
+    const tglPinjam   = val("tgl_pinjam");
+    const tglKembali  = val("tgl_kembali");
+    const hasFile     = !!fileInput.files[0];
+
+    const deptEl = (document.getElementById("departemen").value === "__other__") ? "departemen_other" : "departemen";
+    const checks = [
+      [email,       "email",        "Email"],
+      [namaPemohon, "nama_pemohon", "Nama Lengkap Pemohon"],
+      [departemen,  deptEl,         "Departemen"],
+      [barang,      "barang",       "Barang yang dipinjam"],
+      [kegiatan,    "kegiatan",     "Untuk Tindakan/Kegiatan"],
+      [tglPinjam,   "tgl_pinjam",   "Tanggal Pinjam"],
+      [tglKembali,  "tgl_kembali",  "Tanggal Kembali"]
+    ];
+    for (let i = 0; i < checks.length; i++){
+      if (!checks[i][0]){
+        showError("Mohon lengkapi: " + checks[i][2] + ".");
+        const el = document.getElementById(checks[i][1]);
+        if (el){ el.classList.add("invalid"); el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
+        return;
+      }
+    }
+    if (email.indexOf("@") === -1){
+      showError("Alamat email sepertinya tidak valid — mohon periksa kembali.");
+      const el = document.getElementById("email"); el.classList.add("invalid"); el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    if (tglKembali < tglPinjam){
+      showError("Tanggal Kembali tidak boleh lebih awal dari Tanggal Pinjam.");
+      const el = document.getElementById("tgl_kembali"); el.classList.add("invalid"); el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    if (!hasFile){
+      showError("Mohon lampirkan foto aset yang dipinjam.");
+      fileBtn.classList.add("invalid"); fileBtn.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    if (!document.getElementById("agree1").checked){
+      showError("Mohon setujui pernyataan tanggung jawab peminjaman.");
+      const b = document.getElementById("field-agree1"); b.querySelector(".agree").classList.add("invalid-block"); b.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    if (!document.getElementById("agree2").checked){
+      showError("Mohon setujui pernyataan kebenaran informasi.");
+      const b = document.getElementById("field-agree2"); b.querySelector(".agree").classList.add("invalid-block"); b.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = "Mengirim…";
+
+    const data = new URLSearchParams();
+    data.append("email", email);
+    data.append("nama_pemohon", namaPemohon);
+    data.append("departemen", departemen);
+    data.append("barang", barang);
+    data.append("kondisi_sebelum", val("kondisi_sebelum"));
+    data.append("kegiatan", kegiatan);
+    data.append("tgl_pinjam", tglPinjam);
+    data.append("tgl_kembali", tglKembali);
+    data.append("agree1", "1");
+    data.append("agree2", "1");
+    data.append("company_url", val("company_url")); // honeypot
+
+    try{
+      const att = await readFileAsBase64(fileInput.files[0]);
+      data.append("attachment_data", att.data);
+      data.append("attachment_name", att.name);
+      data.append("attachment_type", att.type);
+    }catch(e){
+      showError("Gagal membaca lampiran. Coba file lain.");
+      btn.disabled = false; btn.textContent = "Ajukan peminjaman"; return;
+    }
+
+    try{
+      const res  = await fetch(WEB_APP_URL, { method:"POST", body:data });
+      const json = await res.json();
+      if(json && json.ok){
+        form.style.display = "none";
+        doneEl.classList.add("show");
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else {
+        showError((json && json.error) ? json.error : "Terjadi kesalahan. Coba lagi.");
+      }
+    }catch(e){
+      showError("Tidak dapat menghubungi server. Periksa koneksi lalu coba lagi.");
+    }finally{
+      btn.disabled = false; btn.textContent = "Ajukan peminjaman";
+    }
+  });
+
+  document.getElementById("another").addEventListener("click", function(){
+    form.reset();
+    fileInfo.textContent = "";
+    document.querySelectorAll('.other').forEach(function(o){ o.classList.remove('show'); });
+    clearInvalid();
+    doneEl.classList.remove("show");
+    form.style.display = "";
+    document.getElementById("email").focus();
+  });
+</script>
+</body>
+</html>
