@@ -77,7 +77,7 @@
   .agree{
     display:flex; gap:10px; align-items:flex-start;
     background:var(--paper); border:1px solid var(--mist); border-radius:9px;
-    padding:12px 13px; font-size:13px; color:var(--slate); line-height:1.5;
+    padding:13px 14px; font-size:13.5px; color:var(--ink); font-weight:500; line-height:1.55;
   }
   .agree input{ width:auto; margin:3px 0 0; flex:0 0 auto; }
   .agree.invalid-block{ border-color:var(--danger); background:#fbeceb; }
@@ -164,7 +164,7 @@
       </div>
 
       <div class="field">
-        <label for="nama_pemohon">Nama Lengkap Pemohon <span class="req">*</span></label>
+        <label for="nama_pemohon">Nama <span class="req">*</span></label>
         <input id="nama_pemohon" name="nama_pemohon" type="text" required />
       </div>
 
@@ -342,7 +342,7 @@
     const deptEl = (document.getElementById("departemen").value === "__other__") ? "departemen_other" : "departemen";
     const checks = [
       [email,       "email",        "Email"],
-      [namaPemohon, "nama_pemohon", "Nama Lengkap Pemohon"],
+      [namaPemohon, "nama_pemohon", "Nama"],
       [departemen,  deptEl,         "Departemen"],
       [barang,      "barang",       "Barang yang dipinjam"],
       [kegiatan,    "kegiatan",     "Untuk Tindakan/Kegiatan"],
